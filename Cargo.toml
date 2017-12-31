@@ -20,3 +20,5 @@ name = "spark"
 path = "src/main.rs"
 doc = false
 
+[dependencies]
+num = "0.1.41"

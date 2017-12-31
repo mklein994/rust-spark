@@ -1,3 +1,6 @@
+extern crate num;
+
+use num::traits::{Float, Zero};
 use std::f32::MAX as f32_max;
 
 /// `graph` generates a string representation of the values as a sparkline.
@@ -34,10 +37,45 @@ pub fn graph(values: &[f32]) -> String {
         (ticks.chars().count() - 1) as f32 / (max - min)
     };
 
-    values.iter()
+    values
+        .iter()
         .cloned()
         .map(|n| (n - min) * ratio)
         .map(|n| n.floor() as usize)
         .filter_map(|n| ticks.chars().nth(n))
+        .collect()
+}
+
+pub fn graph_opt<T>(values: &[Option<T>]) -> String
+where
+    T: Float + Zero,
+{
+    let ticks = "▁▂▃▄▅▆▇█";
+
+    /* XXX: This doesn't feel like idiomatic Rust */
+    let mut min = T::max_value();
+    let mut max = T::zero();
+
+    for &i in values.iter() {
+        max = i.unwrap_or(T::zero()).max(max);
+        min = i.unwrap_or(T::zero()).min(min);
+    }
+
+    let ratio = if max == min {
+        T::one()
+    } else {
+        T::from(ticks.chars().count() - 1).unwrap() / (max - min)
+    };
+
+    values
+        .iter()
+        .cloned()
+        .map(|n| match n {
+            Some(b) => ticks
+                .chars()
+                .nth(((b - min) * ratio).floor().to_usize().unwrap())
+                .unwrap(),
+            None => ' ',
+        })
         .collect()
 }
