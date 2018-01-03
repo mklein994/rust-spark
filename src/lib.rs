@@ -79,3 +79,71 @@ where
         })
         .collect()
 }
+
+pub fn chunky_graph<T>(values: &[Option<T>]) -> String
+where
+    T: Float + Zero,
+{
+    let ticks = "ABCDEFGH";
+
+    /* XXX: This doesn't feel like idiomatic Rust */
+    let mut min = T::max_value();
+    let mut max = T::zero();
+
+    for &i in values.iter() {
+        max = i.unwrap_or(T::zero()).max(max);
+        min = i.unwrap_or(T::zero()).min(min);
+    }
+
+    let ratio = if max == min {
+        T::one()
+    } else {
+        T::from(ticks.chars().count() - 1).unwrap() / (max - min)
+    };
+
+    values
+        .iter()
+        .cloned()
+        .map(|n| match n {
+            Some(b) => ticks
+                .chars()
+                .nth(((b - min) * ratio).floor().to_usize().unwrap())
+                .unwrap(),
+            None => ' ',
+        })
+        .collect()
+}
+
+pub fn smooth_graph<T>(values: &[Option<T>]) -> String
+where
+    T: Float + Zero,
+{
+    let ticks = "abcdefghijklmnop";
+
+    /* XXX: This doesn't feel like idiomatic Rust */
+    let mut min = T::max_value();
+    let mut max = T::zero();
+
+    for &i in values.iter() {
+        max = i.unwrap_or(T::zero()).max(max);
+        min = i.unwrap_or(T::zero()).min(min);
+    }
+
+    let ratio = if max == min {
+        T::one()
+    } else {
+        T::from(ticks.chars().count() - 1).unwrap() / (max - min)
+    };
+
+    values
+        .iter()
+        .cloned()
+        .map(|n| match n {
+            Some(b) => ticks
+                .chars()
+                .nth(((b - min) * ratio).floor().to_usize().unwrap())
+                .unwrap(),
+            None => ' ',
+        })
+        .collect()
+}
