@@ -46,7 +46,7 @@ pub fn graph(values: &[f32]) -> String {
         .collect()
 }
 
-pub fn graph_opt<T>(values: &[Option<T>]) -> String
+pub fn graph_opt<T>(values: &[Option<T>]) -> (T, T, String)
 where
     T: Float + Zero,
 {
@@ -67,17 +67,21 @@ where
         T::from(ticks.chars().count() - 1).unwrap() / (max - min)
     };
 
-    values
-        .iter()
-        .cloned()
-        .map(|n| match n {
-            Some(b) => ticks
-                .chars()
-                .nth(((b - min) * ratio).floor().to_usize().unwrap())
-                .unwrap(),
-            None => ' ',
-        })
-        .collect()
+    (
+        min,
+        max,
+        values
+            .iter()
+            .cloned()
+            .map(|n| match n {
+                Some(b) => ticks
+                    .chars()
+                    .nth(((b - min) * ratio).floor().to_usize().unwrap())
+                    .unwrap(),
+                None => ' ',
+            })
+            .collect(),
+    )
 }
 
 pub fn chunky_graph<T>(values: &[Option<T>]) -> String
@@ -114,7 +118,7 @@ where
         .collect()
 }
 
-pub fn smooth_graph<T>(values: &[Option<T>]) -> String
+pub fn smooth_graph<T>(values: &[Option<T>]) -> (T, T, String)
 where
     T: Float + Zero,
 {
@@ -135,15 +139,19 @@ where
         T::from(ticks.chars().count() - 1).unwrap() / (max - min)
     };
 
-    values
-        .iter()
-        .cloned()
-        .map(|n| match n {
-            Some(b) => ticks
-                .chars()
-                .nth(((b - min) * ratio).floor().to_usize().unwrap())
-                .unwrap(),
-            None => ' ',
-        })
-        .collect()
+    (
+        min,
+        max,
+        values
+            .iter()
+            .cloned()
+            .map(|n| match n {
+                Some(b) => ticks
+                    .chars()
+                    .nth(((b - min) * ratio).floor().to_usize().unwrap())
+                    .unwrap(),
+                None => ' ',
+            })
+            .collect(),
+    )
 }
